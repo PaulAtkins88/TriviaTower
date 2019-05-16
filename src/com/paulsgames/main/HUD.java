@@ -3,12 +3,16 @@ package com.paulsgames.main;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Random;
 
+import com.paulsgames.main.Game.STATE;
 import com.paulsgames.utils.Questions;
 
-public class HUD {
+public class HUD extends MouseAdapter{
 
+	private Game game;
 	public static float HEALTH = 100;
 	private float greenValue = 255;
 
@@ -18,16 +22,54 @@ public class HUD {
 	private String[] questions = new String[10];
 	private String[] answers = new String[10];
 	private String currentQuestion, currentAnswer;
+	private int index = 0, answer1,answer2;
 
-	public HUD() {
+	public HUD(Game game) {
+		this.game = game;
 		r = new Random();
 		q = new Questions();
 		questions = q.getQuestions();
 		answers = q.getAnswers();
 		System.out.print("LOADING QUESTIONS\nLOADING ANSWERS");
+		index = getQuestionNumber();
+
+		currentQuestion = questions[index];
+		currentAnswer = answers[index];
+		answer1 = r.nextInt(10);
+		answer2 = r.nextInt(10);
+		
+	}	
+	
+	private int getQuestionNumber() {
+		return r.nextInt(10);		
 	}
 	
-	
+	public void mousePressed(MouseEvent e) {
+		int mx = e.getX();
+		int my = e.getY();
+		
+		if (game.gameState == STATE.Game) {
+			if (mouseOver(mx,my,15, Game.HEIGHT - 150, 200, 64)) {
+				game.gameState = STATE.Menu;
+				return;
+			}
+		}
+	}
+
+	private boolean mouseOver(int mx, int my, int x, int y, int width, int height) {
+		if (mx > x && mx < x + width) {
+			if (my > y && my < y + height) {
+				return true;
+			} else
+				return false;
+		} else
+			return false;
+	}
+
+	public void mouseReleased(MouseEvent e) {
+
+	}
+
 	public void tick() {
 		
 		HEALTH = Game.clamp(HEALTH, 0, 100);
@@ -65,8 +107,7 @@ public class HUD {
 		g.drawString("Level : " + level, Game.WIDTH - 100, 30);
 		// =====================================================
 		// draw the trivia question here
-		currentQuestion = questions[1];
-		currentAnswer = answers[1];
+		
 		Font qFont = new Font("arial", 0, 20);
 		g.setFont(qFont);
 		g.drawString(currentQuestion, 15, 200);
@@ -78,21 +119,21 @@ public class HUD {
 		g.setColor(Color.gray);
 		g.fillRect((Game.WIDTH / 2) - 499, (Game.HEIGHT / 2) - 149, 199, 63);
 		g.setColor(Color.green);
-		g.drawString("1.14", (Game.WIDTH / 2) - 435, (Game.HEIGHT / 2) - 110);
+		g.drawString(answers[index], (Game.WIDTH / 2) - 435, (Game.HEIGHT / 2) - 110);
 
 		g.setColor(Color.lightGray);
 		g.drawRect((Game.WIDTH / 2) - 500, (Game.HEIGHT / 2) - 75, 200, 64);
 		g.setColor(Color.gray);
 		g.fillRect((Game.WIDTH / 2) - 499, (Game.HEIGHT / 2) - 74, 199, 63);
 		g.setColor(Color.green);
-		g.drawString("2.14", (Game.WIDTH / 2) - 435, (Game.HEIGHT / 2) - 30);
+		g.drawString(answers[answer1], (Game.WIDTH / 2) - 435, (Game.HEIGHT / 2) - 30);
 
 		g.setColor(Color.lightGray);
 		g.drawRect((Game.WIDTH / 2) - 500, (Game.HEIGHT / 2), 200, 64);
 		g.setColor(Color.gray);
 		g.fillRect((Game.WIDTH / 2) - 499, (Game.HEIGHT / 2) + 1, 199, 63);
 		g.setColor(Color.green);
-		g.drawString("3.14", (Game.WIDTH / 2) - 435, (Game.HEIGHT / 2) + 45);
+		g.drawString(answers[answer2], (Game.WIDTH / 2) - 435, (Game.HEIGHT / 2) + 45);
 		//g.drawString(currentAnswer, 15, 300);
 		
 		//======================================================================
@@ -105,6 +146,19 @@ public class HUD {
 		g.drawString("THE TOWER", (Game.WIDTH / 2) + 250,(Game.HEIGHT / 2)-199);
 		g.drawString("TO CLIMB", (Game.WIDTH / 2) + 250,(Game.HEIGHT / 2)-179);
 		g.drawString("WITH CORRECT ANSWERS", (Game.WIDTH / 2) + 175,(Game.HEIGHT / 2)-159);
+		
+		
+		
+		// =====================================================================
+		// Back button
+		Font buttonFont = new Font("arial",1,25);
+		g.setColor(Color.lightGray);
+		g.setFont(buttonFont);
+		g.drawRect(15, Game.HEIGHT - 150, 200, 64);
+		g.setColor(Color.gray);
+		g.fillRect(16, Game.HEIGHT - 149, 199, 63);
+		g.setColor(Color.green);
+		g.drawString("Main Menu", 50, Game.HEIGHT - 110);
 		
 	}
 

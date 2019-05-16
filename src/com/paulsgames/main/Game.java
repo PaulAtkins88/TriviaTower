@@ -23,7 +23,7 @@ public class Game extends Canvas implements Runnable {
 	private HUD hud;
 
 	public enum STATE {
-		Menu, Game
+		Menu, Game, Help
 	};
 
 	
@@ -31,9 +31,10 @@ public class Game extends Canvas implements Runnable {
 
 	public Game() {
 		this.handler = new Handler();
-		this.hud = new HUD();
+		this.hud = new HUD(this);
 		this.menu = new Menu(this, handler);
 		this.addMouseListener(menu);
+		this.addMouseListener(hud);
 		new Window(WIDTH, HEIGHT, "Trivia Towers", this);
 	}
 
@@ -96,7 +97,7 @@ public class Game extends Canvas implements Runnable {
 		
 		if (gameState == STATE.Game) {
 			hud.render(g);
-		} else if (gameState == STATE.Menu) {
+		} else if (gameState == STATE.Menu || gameState == STATE.Help) {
 			menu.render(g);
 		}
 		

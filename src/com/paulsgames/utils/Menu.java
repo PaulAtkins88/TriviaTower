@@ -30,6 +30,18 @@ public class Menu extends MouseAdapter {
 			if (mouseOver(mx,my,(Game.WIDTH / 2) - 100, (Game.HEIGHT / 2) - 150, 200,64)) {
 				game.gameState = STATE.Game;
 				return;
+			} else if (mouseOver(mx,my,(Game.WIDTH / 2) - 100, (Game.HEIGHT / 2) - 75, 200, 64)){
+				game.gameState = STATE.Help;
+				return;				
+			} else if (mouseOver(mx,my,(Game.WIDTH / 2) - 100, (Game.HEIGHT / 2), 200, 64)) {
+				//EXIT BUTTON
+				System.exit(0);
+			}
+		}
+		if (game.gameState == STATE.Help) {
+			if (mouseOver(mx,my,(Game.WIDTH / 2) - 100, (Game.HEIGHT / 2) +200, 200, 64)) {
+				game.gameState = STATE.Menu;
+				return;
 			}
 		}
 	}
@@ -91,7 +103,31 @@ public class Menu extends MouseAdapter {
 			g.setFont(footerFont);
 			g.setColor(Color.white);
 			g.drawString("coded by rookie paulatkins88@github.com", 10, Game.HEIGHT - 50);
-		} // put else if statements here for help menu or game over etc.
+		} else if (game.gameState == STATE.Help) {
+			g.setFont(headingFont);
+			g.setColor(Color.orange);
+			g.drawString("Trivia Towers", (Game.WIDTH / 2) - 250, (Game.HEIGHT / 2) - 300);
+
+			g.setFont(titleFont);
+			g.setColor(Color.cyan);
+			g.drawString("Help", (Game.WIDTH / 2) - 75, (Game.HEIGHT / 2) - 225);
+			
+			g.setFont(menuFont);
+			g.setColor(Color.white);
+			g.drawString("Answer questions correctly to help the dude up the tower!",15,300);
+			g.drawString("Answer incorrectly and watch the dude fall down!", 15, 350);
+
+			g.setColor(Color.lightGray);
+			g.drawRect((Game.WIDTH / 2) - 100, (Game.HEIGHT / 2) +200, 200, 64);
+			g.setColor(Color.gray);
+			g.fillRect((Game.WIDTH / 2) - 99, (Game.HEIGHT / 2) + 201, 199, 63);
+			g.setColor(Color.green);
+			g.drawString("Back", (Game.WIDTH / 2) - 35, (Game.HEIGHT / 2) + 245);
+
+			g.setFont(footerFont);
+			g.setColor(Color.white);
+			g.drawString("coded by rookie paulatkins88@github.com", 10, Game.HEIGHT - 50);
+		}
 
 	}
 
