@@ -21,8 +21,9 @@ public class HUD extends MouseAdapter{
 	private Questions q;
 	private String[] questions = new String[10];
 	private String[] answers = new String[10];
-	private String currentQuestion, currentAnswer;
-	private int index = 0, answer1,answer2;
+	private int[] answer = new int[3];
+	private String currentQuestion;
+	private int index = 0, answer1,answer2,answer3;
 
 	public HUD(Game game) {
 		this.game = game;
@@ -31,12 +32,13 @@ public class HUD extends MouseAdapter{
 		questions = q.getQuestions();
 		answers = q.getAnswers();
 		System.out.print("LOADING QUESTIONS\nLOADING ANSWERS");
-		index = getQuestionNumber();
-
+		
 		currentQuestion = questions[index];
-		currentAnswer = answers[index];
+		
+
 		answer1 = r.nextInt(10);
 		answer2 = r.nextInt(10);
+		answer3 = index;
 		
 	}	
 	
@@ -52,6 +54,12 @@ public class HUD extends MouseAdapter{
 			if (mouseOver(mx,my,15, Game.HEIGHT - 150, 200, 64)) {
 				game.gameState = STATE.Menu;
 				return;
+			} else if (mouseOver(mx,my,(Game.WIDTH / 2) - 500, (Game.HEIGHT / 2), 200, 64)){ // this is answer 3
+				increaseScore();
+				this.index = getQuestionNumber();
+				currentQuestion = questions[index];
+				answer[randomAnswerLocation()] = index;
+				
 			}
 		}
 	}
@@ -119,21 +127,21 @@ public class HUD extends MouseAdapter{
 		g.setColor(Color.gray);
 		g.fillRect((Game.WIDTH / 2) - 499, (Game.HEIGHT / 2) - 149, 199, 63);
 		g.setColor(Color.green);
-		g.drawString(answers[index], (Game.WIDTH / 2) - 435, (Game.HEIGHT / 2) - 110);
+		g.drawString(answers[answer[0]], (Game.WIDTH / 2) - 435, (Game.HEIGHT / 2) - 110);
 
 		g.setColor(Color.lightGray);
 		g.drawRect((Game.WIDTH / 2) - 500, (Game.HEIGHT / 2) - 75, 200, 64);
 		g.setColor(Color.gray);
 		g.fillRect((Game.WIDTH / 2) - 499, (Game.HEIGHT / 2) - 74, 199, 63);
 		g.setColor(Color.green);
-		g.drawString(answers[answer1], (Game.WIDTH / 2) - 435, (Game.HEIGHT / 2) - 30);
+		g.drawString(answers[answer[1]], (Game.WIDTH / 2) - 435, (Game.HEIGHT / 2) - 30);
 
 		g.setColor(Color.lightGray);
 		g.drawRect((Game.WIDTH / 2) - 500, (Game.HEIGHT / 2), 200, 64);
 		g.setColor(Color.gray);
 		g.fillRect((Game.WIDTH / 2) - 499, (Game.HEIGHT / 2) + 1, 199, 63);
 		g.setColor(Color.green);
-		g.drawString(answers[answer2], (Game.WIDTH / 2) - 435, (Game.HEIGHT / 2) + 45);
+		g.drawString(answers[answer[2]], (Game.WIDTH / 2) - 435, (Game.HEIGHT / 2) + 45);
 		//g.drawString(currentAnswer, 15, 300);
 		
 		//======================================================================
@@ -162,7 +170,9 @@ public class HUD extends MouseAdapter{
 		
 	}
 
-
+	private int randomAnswerLocation() {
+		return r.nextInt(3);
+	}
 
 	public void setScore(int score) {
 		this.score = score;
