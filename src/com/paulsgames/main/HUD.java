@@ -5,12 +5,13 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.HashMap;
 import java.util.Random;
 
 import com.paulsgames.main.Game.STATE;
 import com.paulsgames.utils.Questions;
 
-public class HUD extends MouseAdapter{
+public class HUD extends MouseAdapter {
 
 	private Game game;
 	public static float HEALTH = 100;
@@ -19,47 +20,66 @@ public class HUD extends MouseAdapter{
 	private int score = 0, level = 1;
 	private Random r;
 	private Questions q;
-	private String[] questions = new String[10];
-	private String[] answers = new String[10];
+	private HashMap<Integer, String> questions = new HashMap<Integer, String>();
+	private HashMap<Integer, String> answers = new HashMap<Integer, String>();
 	private int[] answer = new int[3];
 	private String currentQuestion;
-	private int index = 0, answer1,answer2,answer3;
+	private int index = 0, answer1, answer2, answer3;
 
+	@SuppressWarnings("unchecked")
 	public HUD(Game game) {
 		this.game = game;
 		r = new Random();
 		q = new Questions();
-		questions = q.getQuestions();
-		answers = q.getAnswers();
-		System.out.print("LOADING QUESTIONS\nLOADING ANSWERS");
-		
-		currentQuestion = questions[index];
-		
+		questions = (HashMap<Integer, String>) q.getQuestions();
+		answers = (HashMap<Integer, String>) q.getAnswers();
+		System.out.println("LOADING QUESTIONS\nLOADING ANSWERS");
 
-		answer1 = r.nextInt(10);
-		answer2 = r.nextInt(10);
-		answer3 = index;
-		
-	}	
-	
-	private int getQuestionNumber() {
-		return r.nextInt(10);		
+		currentQuestion = questions.get(index);
+
+		answer = randomAnswerLocation(index);
+		System.out.println("Question is - " + currentQuestion + " , answer is either - " + answers.get(answer[0]) + " or " + answers.get(answer[1]) + " or " + answers.get(answer[2]));
 	}
-	
+
+	public int[] randomAnswerLocation(int index) {
+		int[] randomAnswers = new int[3];
+		randomAnswers[r.nextInt(3)] = index;
+		for (int i = 0; i < randomAnswers.length; i++) {
+			if (randomAnswers[i] == index) {
+				randomAnswers[i] = index;
+			} else {
+				if (index > 8)
+					randomAnswers[i] = index - r.nextInt(2);
+				else
+					randomAnswers[i] = index + r.nextInt(2);
+			}
+		}
+		return randomAnswers;
+
+	}
+
+	private int getQuestionNumber() {
+		return r.nextInt(10);
+	}
+
 	public void mousePressed(MouseEvent e) {
 		int mx = e.getX();
 		int my = e.getY();
-		
+
 		if (game.gameState == STATE.Game) {
-			if (mouseOver(mx,my,15, Game.HEIGHT - 150, 200, 64)) {
+			if (mouseOver(mx, my, 15, Game.HEIGHT - 150, 200, 64)) {
+				// this is the back button
 				game.gameState = STATE.Menu;
 				return;
-			} else if (mouseOver(mx,my,(Game.WIDTH / 2) - 500, (Game.HEIGHT / 2), 200, 64)){ // this is answer 3
-				increaseScore();
-				this.index = getQuestionNumber();
-				currentQuestion = questions[index];
-				answer[randomAnswerLocation()] = index;
-				
+			} else if (mouseOver(mx, my, (Game.WIDTH / 2) - 500, (Game.HEIGHT / 2) - 150, 200, 64)) {
+				// this is answer 1
+				return;
+			} else if (mouseOver(mx, my, (Game.WIDTH / 2) - 500, (Game.HEIGHT / 2) - 75, 200, 64)) {
+				// this is answer 2
+				return;
+			} else if (mouseOver(mx, my, (Game.WIDTH / 2) - 500, (Game.HEIGHT / 2), 200, 64)) {
+				// this is answer 3
+				return;
 			}
 		}
 	}
@@ -79,7 +99,7 @@ public class HUD extends MouseAdapter{
 	}
 
 	public void tick() {
-		
+
 		HEALTH = Game.clamp(HEALTH, 0, 100);
 		greenValue = Game.clamp(greenValue, 0, 255);
 
@@ -115,51 +135,47 @@ public class HUD extends MouseAdapter{
 		g.drawString("Level : " + level, Game.WIDTH - 100, 30);
 		// =====================================================
 		// draw the trivia question here
-		
+
 		Font qFont = new Font("arial", 0, 20);
 		g.setFont(qFont);
 		g.drawString(currentQuestion, 15, 200);
-		
-		
-		
+
 		g.setColor(Color.lightGray);
 		g.drawRect((Game.WIDTH / 2) - 500, (Game.HEIGHT / 2) - 150, 200, 64);
 		g.setColor(Color.gray);
 		g.fillRect((Game.WIDTH / 2) - 499, (Game.HEIGHT / 2) - 149, 199, 63);
 		g.setColor(Color.green);
-		g.drawString(answers[answer[0]], (Game.WIDTH / 2) - 435, (Game.HEIGHT / 2) - 110);
+		g.drawString(answers.get(answer), (Game.WIDTH / 2) - 435, (Game.HEIGHT / 2) - 110);
 
 		g.setColor(Color.lightGray);
 		g.drawRect((Game.WIDTH / 2) - 500, (Game.HEIGHT / 2) - 75, 200, 64);
 		g.setColor(Color.gray);
 		g.fillRect((Game.WIDTH / 2) - 499, (Game.HEIGHT / 2) - 74, 199, 63);
 		g.setColor(Color.green);
-		g.drawString(answers[answer[1]], (Game.WIDTH / 2) - 435, (Game.HEIGHT / 2) - 30);
+		g.drawString(answers.get(answer), (Game.WIDTH / 2) - 435, (Game.HEIGHT / 2) - 30);
 
 		g.setColor(Color.lightGray);
 		g.drawRect((Game.WIDTH / 2) - 500, (Game.HEIGHT / 2), 200, 64);
 		g.setColor(Color.gray);
 		g.fillRect((Game.WIDTH / 2) - 499, (Game.HEIGHT / 2) + 1, 199, 63);
 		g.setColor(Color.green);
-		g.drawString(answers[answer[2]], (Game.WIDTH / 2) - 435, (Game.HEIGHT / 2) + 45);
-		//g.drawString(currentAnswer, 15, 300);
-		
-		//======================================================================
+		g.drawString(answers.get(answer), (Game.WIDTH / 2) - 435, (Game.HEIGHT / 2) + 45);
+		// g.drawString(currentAnswer, 15, 300);
+
+		// ======================================================================
 		// draw tower - will be an image eventually
-		
-		g.drawRect((Game.WIDTH / 2) + 150,(Game.HEIGHT / 2)-300, 300, 600);
+
+		g.drawRect((Game.WIDTH / 2) + 150, (Game.HEIGHT / 2) - 300, 300, 600);
 		g.setColor(Color.LIGHT_GRAY);
-		g.fillRect((Game.WIDTH / 2) + 151,(Game.HEIGHT / 2)-299, 299, 599);
+		g.fillRect((Game.WIDTH / 2) + 151, (Game.HEIGHT / 2) - 299, 299, 599);
 		g.setColor(Color.black);
-		g.drawString("THE TOWER", (Game.WIDTH / 2) + 250,(Game.HEIGHT / 2)-199);
-		g.drawString("TO CLIMB", (Game.WIDTH / 2) + 250,(Game.HEIGHT / 2)-179);
-		g.drawString("WITH CORRECT ANSWERS", (Game.WIDTH / 2) + 175,(Game.HEIGHT / 2)-159);
-		
-		
-		
+		g.drawString("THE TOWER", (Game.WIDTH / 2) + 250, (Game.HEIGHT / 2) - 199);
+		g.drawString("TO CLIMB", (Game.WIDTH / 2) + 250, (Game.HEIGHT / 2) - 179);
+		g.drawString("WITH CORRECT ANSWERS", (Game.WIDTH / 2) + 175, (Game.HEIGHT / 2) - 159);
+
 		// =====================================================================
 		// Back button
-		Font buttonFont = new Font("arial",1,25);
+		Font buttonFont = new Font("arial", 1, 25);
 		g.setColor(Color.lightGray);
 		g.setFont(buttonFont);
 		g.drawRect(15, Game.HEIGHT - 150, 200, 64);
@@ -167,7 +183,7 @@ public class HUD extends MouseAdapter{
 		g.fillRect(16, Game.HEIGHT - 149, 199, 63);
 		g.setColor(Color.green);
 		g.drawString("Main Menu", 50, Game.HEIGHT - 110);
-		
+
 	}
 
 	private int randomAnswerLocation() {

@@ -1,42 +1,64 @@
 package com.paulsgames.utils;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Questions {
 	private BufferedReader questionInput;
 	private BufferedReader answerInput;
+	private int size = 0;
 	
-	public String questions[] = new String[10];
-	public String answers[] = new String[10];
+	private HashMap <Integer, String> questions = new HashMap<Integer, String>();
+	private HashMap <Integer, String> answers = new HashMap<Integer, String>();
 	
 	public Questions() {
+		// open the question & answer files
 		try {
 			this.questionInput = new BufferedReader(new FileReader("questions.csv"));
-			this.answerInput = new BufferedReader(new FileReader("answers.csv"));
-		} catch (FileNotFoundException e) {
+			this.answerInput = new BufferedReader(new FileReader("answers.csv"));			
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		try {
+			while (questionInput.readLine() != null) size++;			
+			questionInput.close();
+			this.questionInput = new BufferedReader(new FileReader("questions.csv"));
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
-		for (int i = 0; i < questions.length; i++) {
+		
+		//read the questions and answers
+		for (int i = 0; i < size; i++) {
 			try {
-				questions[i] = questionInput.readLine();
-				answers[i] = answerInput.readLine();	
+				questions.put(i, questionInput.readLine());
+				answers.put(i, answerInput.readLine());	
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
+		
+		// close both files
+		try {
+			questionInput.close();
+			answerInput.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
-	public String[] getQuestions() {
+	public Map getQuestions() {
 		return this.questions;
 	}
 	
-	public String[] getAnswers() {
+	public Map getAnswers() {
 		return this.answers;
 	}
 	
