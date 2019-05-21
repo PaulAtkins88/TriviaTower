@@ -4,7 +4,10 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
+import java.io.File;
 
+import com.paulsgames.gfx.BufferedImageLoader;
 import com.paulsgames.gfx.Window;
 import com.paulsgames.utils.Handler;
 import com.paulsgames.utils.Menu;
@@ -17,11 +20,13 @@ public class Game extends Canvas implements Runnable {
 
 	private boolean running = false;
 	private Thread thread;
-
+	
 	private Menu menu;
 	private Handler handler;
 	private HUD hud;
 
+	public static BufferedImage sprite_sheet;
+	
 	public enum STATE {
 		Menu, Game, Help
 	};
@@ -30,8 +35,12 @@ public class Game extends Canvas implements Runnable {
 	public static STATE gameState = STATE.Menu; // start the game in the menu
 
 	public Game() {
+		File myFile = new File("spriteSheet.png");
+		BufferedImageLoader imageLoader = new BufferedImageLoader();
+		sprite_sheet = imageLoader.loadImage(myFile);
+		
 		this.handler = new Handler();
-		this.hud = new HUD(this);
+		this.hud = new HUD(this,handler);
 		this.menu = new Menu(this, handler);
 		this.addMouseListener(menu);
 		this.addMouseListener(hud);
@@ -124,6 +133,7 @@ public class Game extends Canvas implements Runnable {
 		else
 			return var;
 	}
+	
 
 	public static void main(String[] args) {
 		new Game();

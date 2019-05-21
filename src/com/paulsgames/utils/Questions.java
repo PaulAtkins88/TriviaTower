@@ -20,7 +20,6 @@ public class Questions {
 			this.questionInput = new BufferedReader(new FileReader("questions.csv"));
 			this.answerInput = new BufferedReader(new FileReader("answers.csv"));			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		try {
@@ -28,7 +27,6 @@ public class Questions {
 			questionInput.close();
 			this.questionInput = new BufferedReader(new FileReader("questions.csv"));
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		
@@ -39,7 +37,6 @@ public class Questions {
 				questions.put(i, questionInput.readLine());
 				answers.put(i, answerInput.readLine());	
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -49,7 +46,6 @@ public class Questions {
 			questionInput.close();
 			answerInput.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

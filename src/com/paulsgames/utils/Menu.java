@@ -8,7 +8,9 @@ import java.awt.event.MouseEvent;
 import java.util.Random;
 
 import com.paulsgames.main.Game;
+import com.paulsgames.main.ID;
 import com.paulsgames.main.Game.STATE;
+import com.paulsgames.main.Player;
 
 public class Menu extends MouseAdapter {
 	private Game game;
@@ -29,6 +31,9 @@ public class Menu extends MouseAdapter {
 		if (game.gameState == STATE.Menu) {
 			if (mouseOver(mx,my,(Game.WIDTH / 2) - 100, (Game.HEIGHT / 2) - 150, 200,64)) {
 				game.gameState = STATE.Game;
+				
+				// TODO: This adds the player object to the game, this needs to be drawn AFTER the tower.
+				handler.addObject(new Player((Game.WIDTH/2) +100,(Game.HEIGHT/2) + 180,ID.Player,handler));
 				return;
 			} else if (mouseOver(mx,my,(Game.WIDTH / 2) - 100, (Game.HEIGHT / 2) - 75, 200, 64)){
 				game.gameState = STATE.Help;

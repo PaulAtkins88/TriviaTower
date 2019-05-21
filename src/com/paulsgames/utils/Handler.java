@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class Handler {
 
-	ArrayList<GameObject> object = new ArrayList<GameObject>();
+	public ArrayList<GameObject> object = new ArrayList<GameObject>();
 
 	public void tick() {
 		// turn on the tick method for every game object... Every one player, monsters,
