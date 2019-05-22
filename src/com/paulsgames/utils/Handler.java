@@ -15,7 +15,6 @@ public class Handler {
 			tempObject.tick();
 		}
 	}
-	
 
 	public void render(Graphics g) {
 		// turn on the render function for every game object , like above. same thing.
@@ -23,7 +22,6 @@ public class Handler {
 			GameObject tempObject = object.get(i);
 			tempObject.render(g);
 		}
-
 	}
 
 	public void addObject(GameObject object) {

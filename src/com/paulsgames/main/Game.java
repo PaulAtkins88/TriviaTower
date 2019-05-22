@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 import com.paulsgames.gfx.BufferedImageLoader;
+import com.paulsgames.gfx.Tower;
 import com.paulsgames.gfx.Window;
 import com.paulsgames.utils.Handler;
 import com.paulsgames.utils.Menu;
@@ -20,27 +21,28 @@ public class Game extends Canvas implements Runnable {
 
 	private boolean running = false;
 	private Thread thread;
-	
+
 	private Menu menu;
 	private Handler handler;
 	private HUD hud;
+	private Tower tower;
 
 	public static BufferedImage sprite_sheet;
-	
+
 	public enum STATE {
-		Menu, Game, Help
+		Menu, Game, Help, End
 	};
 
-	
 	public static STATE gameState = STATE.Menu; // start the game in the menu
 
 	public Game() {
 		File myFile = new File("spriteSheet.png");
 		BufferedImageLoader imageLoader = new BufferedImageLoader();
 		sprite_sheet = imageLoader.loadImage(myFile);
-		
+		this.tower = new Tower(this);
+
 		this.handler = new Handler();
-		this.hud = new HUD(this,handler);
+		this.hud = new HUD(this, handler);
 		this.menu = new Menu(this, handler);
 		this.addMouseListener(menu);
 		this.addMouseListener(hud);
@@ -54,7 +56,7 @@ public class Game extends Canvas implements Runnable {
 		float ns = 1000000000 / amountOfTicks;
 		float delta = 0f;
 		long timer = System.currentTimeMillis();
-		//int frames = 0;
+		// int frames = 0;
 		while (running) {
 			long now = System.nanoTime();
 			delta += (now - lastTime) / ns;
@@ -65,12 +67,12 @@ public class Game extends Canvas implements Runnable {
 			}
 			if (running)
 				render();
-			//frames++;
+			// frames++;
 
 			if (System.currentTimeMillis() - timer > 1000) {
 				timer += 1000;
 				// System.out.println("FPS: " + frames);
-				//frames = 0;
+				// frames = 0;
 			}
 		}
 		stop();
@@ -100,16 +102,18 @@ public class Game extends Canvas implements Runnable {
 
 		Graphics g = bs.getDrawGraphics();
 
-		g.setColor(Color.black);
+		g.setColor(new Color(0, 255, 255));
 		g.fillRect(0, 0, WIDTH, HEIGHT);
 		handler.render(g);
-		
+
 		if (gameState == STATE.Game) {
+			tower.render(g);
 			hud.render(g);
-		} else if (gameState == STATE.Menu || gameState == STATE.Help) {
+		} else if (gameState == STATE.Menu || gameState == STATE.Help || gameState == STATE.End) {
 			menu.render(g);
+			tower.render(g);
 		}
-		
+
 		g.dispose();
 		bs.show();
 	}
@@ -119,12 +123,17 @@ public class Game extends Canvas implements Runnable {
 			// do game stuff
 			hud.tick();
 			handler.tick();
+			if (HUD.HEALTH <= 0) {
+				HUD.HEALTH = 100;
+				gameState = STATE.End;
+				handler.object.clear();
+			}
 		} else if (gameState == STATE.Menu) {
 			menu.tick();
 			handler.tick();
 		}
 	}
-	
+
 	public static float clamp(float var, float min, float max) {
 		if (var >= max)
 			return var = max;
@@ -133,7 +142,6 @@ public class Game extends Canvas implements Runnable {
 		else
 			return var;
 	}
-	
 
 	public static void main(String[] args) {
 		new Game();

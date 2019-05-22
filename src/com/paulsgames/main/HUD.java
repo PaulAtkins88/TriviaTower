@@ -21,8 +21,7 @@ public class HUD extends MouseAdapter {
 	private Handler handler;
 	public static float HEALTH = 100;
 	private float greenValue = 255;
-
-	private int score = 0, level = 1;
+	public static int score = 0, level = 1;
 	private Random r;
 	private Questions q;
 	private HashMap<Integer, String> questions = new HashMap<Integer, String>();
@@ -31,8 +30,10 @@ public class HUD extends MouseAdapter {
 	private String currentQuestion;
 	private int index = 0;
 	
-	private BufferedImage towerBlock;
-
+	// timer variables
+	public static long startTime;
+	private long elapsedTime,elapsedSeconds; 
+	
 	@SuppressWarnings("unchecked")
 	public HUD(Game game, Handler handler) {
 		this.game = game;
@@ -40,16 +41,12 @@ public class HUD extends MouseAdapter {
 		r = new Random();
 		q = new Questions();
 		
-		SpriteSheet ss = new SpriteSheet(Game.sprite_sheet);
-		towerBlock = ss.grabImage(1, 2, 32, 32); // grab image at cell, row		
-		
 		questions = (HashMap<Integer, String>) q.getQuestions();
 		answers = (HashMap<Integer, String>) q.getAnswers();
 
 		currentQuestion = questions.get(index);
 
 		answer = randomAnswerLocation(index);
-		
 	}
 
 	public int[] randomAnswerLocation(int index) {
@@ -59,17 +56,14 @@ public class HUD extends MouseAdapter {
 			if (randomAnswers[i] == index) {
 				randomAnswers[i] = index;
 			} else {
-				if (index >= 10)
-					randomAnswers[i] = index - r.nextInt(5);
-				else
-					randomAnswers[i] = index + r.nextInt(5);
+				randomAnswers[i] = r.nextInt(15);				
 			}
 		}
 		return randomAnswers;
 	}
 
 	private int getQuestionNumber() {
-		return r.nextInt(10);
+		return r.nextInt(15);
 	}
 
 	public void mousePressed(MouseEvent e) {
@@ -86,40 +80,27 @@ public class HUD extends MouseAdapter {
 				// this is answer 1
 				selection = answer[0];
 				if(selection == index) {
-					index = getQuestionNumber();
-					currentQuestion = questions.get(index);
-					answer = randomAnswerLocation(index);
-					increaseScore();
+					correct();
 				} else {
-					decreaseScore();
-					HEALTH--;
-				}
-				
+					incorrect();
+				}				
 				return;
 			} else if (mouseOver(mx, my, (Game.WIDTH / 2) - 500, (Game.HEIGHT / 2) - 75, 200, 64)) {
 				// this is answer 2
 				selection = answer[1];
 				if(selection == index) {
-					index = getQuestionNumber();
-					currentQuestion = questions.get(index);
-					answer = randomAnswerLocation(index);
-					increaseScore();
+					correct();
 				} else {
-					decreaseScore();
-					HEALTH--;
+					incorrect();
 				}
 				return;
 			} else if (mouseOver(mx, my, (Game.WIDTH / 2) - 500, (Game.HEIGHT / 2), 200, 64)) {
 				// this is answer 3
 				selection = answer[2];
 				if(selection == index) {
-					index = getQuestionNumber();
-					currentQuestion = questions.get(index);
-					answer = randomAnswerLocation(index);
-					increaseScore();
+					correct();
 				} else {
-					decreaseScore();
-					HEALTH--;
+					incorrect();
 				}
 				return;
 			}
@@ -144,28 +125,33 @@ public class HUD extends MouseAdapter {
 
 		HEALTH = Game.clamp(HEALTH, 0, 100);
 		greenValue = Game.clamp(greenValue, 0, 255);
+		score = (int) Game.clamp(score, 0, 100000);
 
 		greenValue = HEALTH * 2;
 	}
 
-	private void increaseScore() {
+	private void correct() {
 		for (GameObject object : handler.object) {
 			if (object.getId() == ID.Player) {
 				object.setY((int) (object.getY()-32));
-			}
-			
+			}			
 		}
+		index = getQuestionNumber();
+		currentQuestion = questions.get(index);
+		answer = randomAnswerLocation(index);
 		score += 100;
+		level++;
 	}
 
-	private void decreaseScore() {
+	private void incorrect() {
 		for (GameObject object : handler.object) {
 			if (object.getId() == ID.Player) {
 				object.setY((int) (object.getY()+32));
-			}
-			
+			}			
 		}
+		HEALTH -= 10;
 		score -= 100;
+		level--;
 	}
 
 	public void render(Graphics g) {
@@ -180,13 +166,25 @@ public class HUD extends MouseAdapter {
 		g.setColor(new Color(75, (int) greenValue, 0));
 		g.fillRect(15, 15, (int) HEALTH * 2, 32);
 
-		g.setColor(Color.white);
+		g.setColor(Color.black);
 		g.drawRect(15, 15, 200, 32);
 
 		g.drawString("Health", 15, 12);
 
 		g.drawString("Score: " + score, Game.WIDTH - 100, 15);
 		g.drawString("Level : " + level, Game.WIDTH - 100, 30);
+		
+		// start timer
+		elapsedTime = System.currentTimeMillis() - startTime;
+		elapsedSeconds = (elapsedTime / 1000) + 1;
+		// draw timer
+		g.drawString("Timer : " + elapsedSeconds, Game.WIDTH - 100, 50);
+		if(elapsedSeconds > 10) { // reset the timer
+			startTime = System.currentTimeMillis();
+			elapsedTime = System.currentTimeMillis() - startTime;
+			elapsedSeconds = (elapsedTime / 1000) + 1;
+		}
+		
 		// =====================================================
 		// draw the trivia question here
 
@@ -198,42 +196,22 @@ public class HUD extends MouseAdapter {
 		g.drawRect((Game.WIDTH / 2) - 500, (Game.HEIGHT / 2) - 150, 200, 64);
 		g.setColor(Color.gray);
 		g.fillRect((Game.WIDTH / 2) - 499, (Game.HEIGHT / 2) - 149, 199, 63);
-		g.setColor(Color.green);
+		g.setColor(Color.black);
 		g.drawString(answers.get(answer[0]), (Game.WIDTH / 2) - 470, (Game.HEIGHT / 2) - 110);
 
 		g.setColor(Color.lightGray);
 		g.drawRect((Game.WIDTH / 2) - 500, (Game.HEIGHT / 2) - 75, 200, 64);
 		g.setColor(Color.gray);
 		g.fillRect((Game.WIDTH / 2) - 499, (Game.HEIGHT / 2) - 74, 199, 63);
-		g.setColor(Color.green);
+		g.setColor(Color.black);
 		g.drawString(answers.get(answer[1]), (Game.WIDTH / 2) - 470, (Game.HEIGHT / 2) - 30);
 
 		g.setColor(Color.lightGray);
 		g.drawRect((Game.WIDTH / 2) - 500, (Game.HEIGHT / 2), 200, 64);
 		g.setColor(Color.gray);
 		g.fillRect((Game.WIDTH / 2) - 499, (Game.HEIGHT / 2) + 1, 199, 63);
-		g.setColor(Color.green);
-		g.drawString(answers.get(answer[2]), (Game.WIDTH / 2) - 470, (Game.HEIGHT / 2) + 45);
-
-		// ==================================================ex====================
-		// draw tower 
-
-		int towerXStart = (Game.WIDTH / 2) + 150, towerYStart = (Game.HEIGHT / 2) - 300;
-		int towerX = 0, towerY = towerYStart;
-		for (int i = 0; i < 16; i++) {
-			towerX = towerXStart;
-			for (int y = 0; y < 8;y++) {
-				if (i % 2 == 0){
-					g.drawImage(towerBlock, towerX, towerY, null);				
-					towerX +=32;
-				} else {
-					g.drawImage(towerBlock, towerX - 16, towerY, null);				
-					towerX +=32;
-				}
-			}
-			towerY += 32;			
-		}
-		
+		g.setColor(Color.black);
+		g.drawString(answers.get(answer[2]), (Game.WIDTH / 2) - 470, (Game.HEIGHT / 2) + 45);		
 
 		// =====================================================================
 		// Back button
@@ -243,7 +221,7 @@ public class HUD extends MouseAdapter {
 		g.drawRect(15, Game.HEIGHT - 150, 200, 64);
 		g.setColor(Color.gray);
 		g.fillRect(16, Game.HEIGHT - 149, 199, 63);
-		g.setColor(Color.green);
+		g.setColor(Color.black);
 		g.drawString("Main Menu", 50, Game.HEIGHT - 110);
 
 	}

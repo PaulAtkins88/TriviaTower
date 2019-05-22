@@ -8,38 +8,36 @@ import com.paulsgames.gfx.SpriteSheet;
 import com.paulsgames.utils.GameObject;
 import com.paulsgames.utils.Handler;
 
-public class Player extends GameObject{
+public class MenuPlayer extends GameObject{
 	Handler handler;
-	private BufferedImage player_image1,player_image2;
+	private BufferedImage player;
 	
-	public Player(float x, float y, ID id,Handler handler) {
+	public MenuPlayer(float x, float y, ID id,Handler handler) {
 		super(x, y, id);
 		this.handler = handler;
 		SpriteSheet ss = new SpriteSheet(Game.sprite_sheet);
-		player_image1 = ss.grabImage(1, 1, 32, 32);
-		player_image2 = ss.grabImage(2, 1, 32, 32);
+		player = ss.grabImage(1, 1, 32, 32);
+		velX = 3;
 	}
 
 	@Override
 	public void tick() {
-		this.x += velX;
-		this.y += velY;
-		
-		x = Game.clamp(x, 0, Game.WIDTH - 46);
-		y = Game.clamp(y, 0, Game.HEIGHT - 72);
-		
+		x += velX;
+		y += velY;
+		if (y <= 0 || y >= Game.HEIGHT - 32) 
+			velY *= -1;
+		if (x <= 0 || x >= Game.WIDTH - 32) 
+			velX *= -1;		
 	}
 
 	@Override
 	public void render(Graphics g) {
-		if(HUD.level % 2 == 0)
-			g.drawImage(player_image1,(int)x,(int)y,null);
-		else 
-			g.drawImage(player_image2,(int)x,(int)y,null);
+		g.drawImage(player,(int)x,(int)y,null);
 	}
 
 	@Override
 	public Rectangle getBounds() {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
