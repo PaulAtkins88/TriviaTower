@@ -51,7 +51,7 @@ public class Menu extends MouseAdapter {
 				return;
 			}
 		}
-		if (game.gameState == STATE.End) {
+		if (game.gameState == STATE.End || game.gameState == STATE.Win) {
 			if (mouseOver(mx,my,(Game.WIDTH / 2) - 100, (Game.HEIGHT / 2) +200, 200, 64)) {
 				game.gameState = STATE.Menu;
 				return;
@@ -152,7 +152,7 @@ public class Menu extends MouseAdapter {
 			g.drawString("You died.", (Game.WIDTH / 2) - 75, (Game.HEIGHT / 2) - 225);
 			
 			g.setFont(menuFont);
-			g.setColor(Color.white);
+			g.setColor(Color.black);
 			g.drawString("Failed.",15,300);
 			g.drawString("You suck. try again", 15, 350);
 
@@ -160,12 +160,36 @@ public class Menu extends MouseAdapter {
 			g.drawRect((Game.WIDTH / 2) - 100, (Game.HEIGHT / 2) +200, 200, 64);
 			g.setColor(Color.gray);
 			g.fillRect((Game.WIDTH / 2) - 99, (Game.HEIGHT / 2) + 201, 199, 63);
-			g.setColor(Color.green);
+			g.setColor(Color.black);
 			g.drawString("Menu", (Game.WIDTH / 2) - 35, (Game.HEIGHT / 2) + 245);
 
 			g.setFont(footerFont);
-			g.setColor(Color.white);
-			g.drawString("coded by rookie paulatkins88@github.com", 10, Game.HEIGHT - 50);
+			g.setColor(Color.black);
+			g.drawString("coded by rookie paulatkins88@github.com", 10, Game.HEIGHT - 60);
+		} else if (game.gameState == STATE.Win) {
+			g.setFont(headingFont);
+			g.setColor(Color.orange);
+			g.drawString("Well Done!", (Game.WIDTH / 2) - 250, (Game.HEIGHT / 2) - 300);
+
+			g.setFont(titleFont);
+			g.setColor(Color.black);
+			g.drawString("You won!", (Game.WIDTH / 2) - 75, (Game.HEIGHT / 2) - 225);
+			
+			g.setFont(menuFont);
+			g.setColor(Color.black);
+			g.drawString("Score: "+ HUD.score,15,300);
+			g.drawString("Thank you for playing Trivia Tower!", 15, 350);
+
+			g.setColor(Color.lightGray);
+			g.drawRect((Game.WIDTH / 2) - 100, (Game.HEIGHT / 2) +200, 200, 64);
+			g.setColor(Color.gray);
+			g.fillRect((Game.WIDTH / 2) - 99, (Game.HEIGHT / 2) + 201, 199, 63);
+			g.setColor(Color.black);
+			g.drawString("Menu", (Game.WIDTH / 2) - 35, (Game.HEIGHT / 2) + 245);
+
+			g.setFont(footerFont);
+			g.setColor(Color.black);
+			g.drawString("coded by rookie paulatkins88@github.com", 10, Game.HEIGHT - 60);
 		}
 
 	}

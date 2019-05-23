@@ -30,7 +30,7 @@ public class Game extends Canvas implements Runnable {
 	public static BufferedImage sprite_sheet;
 
 	public enum STATE {
-		Menu, Game, Help, End
+		Menu, Game, Help, Win, End
 	};
 
 	public static STATE gameState = STATE.Menu; // start the game in the menu
@@ -109,7 +109,7 @@ public class Game extends Canvas implements Runnable {
 		if (gameState == STATE.Game) {
 			tower.render(g);
 			hud.render(g);
-		} else if (gameState == STATE.Menu || gameState == STATE.Help || gameState == STATE.End) {
+		} else if (gameState == STATE.Menu || gameState == STATE.Help || gameState == STATE.End || gameState == STATE.Win) {
 			menu.render(g);
 			tower.render(g);
 		}
@@ -126,6 +126,10 @@ public class Game extends Canvas implements Runnable {
 			if (HUD.HEALTH <= 0) {
 				HUD.HEALTH = 100;
 				gameState = STATE.End;
+				handler.object.clear();
+			} else if (HUD.level == 2) {
+				HUD.HEALTH = 100;
+				gameState = STATE.Win;				
 				handler.object.clear();
 			}
 		} else if (gameState == STATE.Menu) {

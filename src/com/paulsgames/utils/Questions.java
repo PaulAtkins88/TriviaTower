@@ -13,7 +13,7 @@ public class Questions {
 	
 	private HashMap <Integer, String> questions = new HashMap<Integer, String>();
 	private HashMap <Integer, String> answers = new HashMap<Integer, String>();
-	
+	private HashMap <Integer, String[]> test = new HashMap<Integer,String[]>();
 	public Questions() {
 		// open the question & answer files
 		try {
@@ -29,7 +29,6 @@ public class Questions {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		
 		
 		//read the questions and answers
 		for (int i = 0; i < size; i++) {
