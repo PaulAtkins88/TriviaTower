@@ -1,61 +1,76 @@
 package com.paulsgames.utils;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Questions {
-	private BufferedReader questionInput;
-	private BufferedReader answerInput;
-	private int size = 0;
-	
-	private HashMap <Integer, String> questions = new HashMap<Integer, String>();
-	private HashMap <Integer, String> answers = new HashMap<Integer, String>();
-	private HashMap <Integer, String[]> test = new HashMap<Integer,String[]>();
+	private BufferedReader input;
+	public static int size = 0;
+
+	private String[] questions;
+	private String[][] answers;
+	private String[] tmp;
+
 	public Questions() {
 		// open the question & answer files
+		size = getArraySize();
+		System.out.println("arraySize is " + size);
+		questions = new String[size];
+		answers = new String[size][3];
 		try {
-			this.questionInput = new BufferedReader(new FileReader("questions.csv"));
-			this.answerInput = new BufferedReader(new FileReader("answers.csv"));			
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		try {
-			while (questionInput.readLine() != null) size++;			
-			questionInput.close();
-			this.questionInput = new BufferedReader(new FileReader("questions.csv"));
-		} catch (IOException e1) {
+			this.input = new BufferedReader(new FileReader("data.csv"));
+		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		}
-		
-		//read the questions and answers
+		String tmpLine;
+		tmp = new String[4];
+		// read the questions and answers
 		for (int i = 0; i < size; i++) {
 			try {
-				questions.put(i, questionInput.readLine());
-				answers.put(i, answerInput.readLine());	
+				tmpLine = input.readLine();
+				tmp = tmpLine.split(",", 4);
+				questions[i] = tmp[0];
+				answers[i][0] = tmp[1];
+				answers[i][1] = tmp[2];
+				answers[i][2] = tmp[3];
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-		
-		// close both files
+
+		// close files
 		try {
-			questionInput.close();
-			answerInput.close();
+			input.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	public Map getQuestions() {
+
+	private int getArraySize() {
+		int count = 0;
+		try {
+			this.input = new BufferedReader(new FileReader("data.csv"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		try {
+			while (input.readLine() != null)
+				count++;
+			input.close();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		return count;
+	}
+
+	public String[] getQuestions() {
 		return this.questions;
 	}
-	
-	public Map getAnswers() {
+
+	public String[][] getAnswers() {
 		return this.answers;
 	}
-	
 
 }
