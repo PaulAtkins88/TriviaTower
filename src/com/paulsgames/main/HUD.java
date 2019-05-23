@@ -24,46 +24,43 @@ public class HUD extends MouseAdapter {
 	public static int score = 0, level = 1;
 	private Random r;
 	private Questions q;
-	private HashMap<Integer, String> questions = new HashMap<Integer, String>();
-	private HashMap<Integer, String> answers = new HashMap<Integer, String>();
-	private int[] answer = new int[3];
-	private String currentQuestion;
+	private String[] questions;
+	private String[][] answers;
+	private int[] ansLocation;
 	private int index = 0;
-	
+
+	private int[] test = {0,1,2};
+
 	// timer variables
 	public static long startTime;
-	private long elapsedTime,elapsedSeconds; 
-	
+	private long elapsedTime, elapsedSeconds;
+
 	@SuppressWarnings("unchecked")
 	public HUD(Game game, Handler handler) {
 		this.game = game;
 		this.handler = handler;
 		r = new Random();
 		q = new Questions();
-		
-		questions = (HashMap<Integer, String>) q.getQuestions();
-		answers = (HashMap<Integer, String>) q.getAnswers();
 
-		currentQuestion = questions.get(index);
-
-		answer = randomAnswerLocation(index);
+		questions = q.getQuestions();
+		answers = q.getAnswers();
+		ansLocation = randomAnswerLocation(test);
 	}
 
-	public int[] randomAnswerLocation(int index) {
-		int[] randomAnswers = new int[3];
-		randomAnswers[r.nextInt(3)] = index;
-		for (int i = 0; i < randomAnswers.length; i++) {
-			if (randomAnswers[i] == index) {
-				randomAnswers[i] = index;
-			} else {
-				randomAnswers[i] = r.nextInt(15);				
-			}
+	public int[] randomAnswerLocation(int[] array) {
+
+		for (int i = 0; i < array.length; i++) {
+			int randomPosition = r.nextInt(array.length);
+			int temp = array[i];
+			array[i] = array[randomPosition];
+			array[randomPosition] = temp;
 		}
-		return randomAnswers;
+
+		return array;
 	}
 
 	private int getQuestionNumber() {
-		return r.nextInt(15);
+		return r.nextInt(Questions.size);
 	}
 
 	public void mousePressed(MouseEvent e) {
@@ -78,17 +75,18 @@ public class HUD extends MouseAdapter {
 				return;
 			} else if (mouseOver(mx, my, (Game.WIDTH / 2) - 500, (Game.HEIGHT / 2) - 150, 200, 64)) {
 				// this is answer 1
-				selection = answer[0];
-				if(selection == index) {
+				selection = ansLocation[0];
+				if (answers[index][selection].equals(answers[index][0])) {
 					correct();
 				} else {
 					incorrect();
-				}				
+				}
 				return;
+
 			} else if (mouseOver(mx, my, (Game.WIDTH / 2) - 500, (Game.HEIGHT / 2) - 75, 200, 64)) {
 				// this is answer 2
-				selection = answer[1];
-				if(selection == index) {
+				selection = ansLocation[1];
+				if (answers[index][selection].equals(answers[index][0])) {
 					correct();
 				} else {
 					incorrect();
@@ -96,8 +94,8 @@ public class HUD extends MouseAdapter {
 				return;
 			} else if (mouseOver(mx, my, (Game.WIDTH / 2) - 500, (Game.HEIGHT / 2), 200, 64)) {
 				// this is answer 3
-				selection = answer[2];
-				if(selection == index) {
+				selection = ansLocation[2];
+				if (answers[index][selection].equals(answers[index][0])) {
 					correct();
 				} else {
 					incorrect();
@@ -133,12 +131,11 @@ public class HUD extends MouseAdapter {
 	private void correct() {
 		for (GameObject object : handler.object) {
 			if (object.getId() == ID.Player) {
-				object.setY((int) (object.getY()-32));
-			}			
+				object.setY((int) (object.getY() - 32));
+			}
 		}
 		index = getQuestionNumber();
-		currentQuestion = questions.get(index);
-		answer = randomAnswerLocation(index);
+		ansLocation = randomAnswerLocation(test);
 		score += 100;
 		level++;
 	}
@@ -146,8 +143,8 @@ public class HUD extends MouseAdapter {
 	private void incorrect() {
 		for (GameObject object : handler.object) {
 			if (object.getId() == ID.Player) {
-				object.setY((int) (object.getY()+32));
-			}			
+				object.setY((int) (object.getY() + 32));
+			}
 		}
 		HEALTH -= 10;
 		score -= 100;
@@ -173,45 +170,45 @@ public class HUD extends MouseAdapter {
 
 		g.drawString("Score: " + score, Game.WIDTH - 100, 15);
 		g.drawString("Level : " + level, Game.WIDTH - 100, 30);
-		
+
 		// start timer
 		elapsedTime = System.currentTimeMillis() - startTime;
 		elapsedSeconds = (elapsedTime / 1000) + 1;
 		// draw timer
 		g.drawString("Timer : " + elapsedSeconds, Game.WIDTH - 100, 50);
-		if(elapsedSeconds > 10) { // reset the timer
+		if (elapsedSeconds > 10) { // reset the timer
 			startTime = System.currentTimeMillis();
 			elapsedTime = System.currentTimeMillis() - startTime;
 			elapsedSeconds = (elapsedTime / 1000) + 1;
 		}
-		
+
 		// =====================================================
 		// draw the trivia question here
 
 		Font qFont = new Font("arial", 0, 20);
 		g.setFont(qFont);
-		g.drawString(currentQuestion, 15, 200);
+		g.drawString(questions[index], 15, 200);
 
 		g.setColor(Color.lightGray);
 		g.drawRect((Game.WIDTH / 2) - 500, (Game.HEIGHT / 2) - 150, 200, 64);
 		g.setColor(Color.gray);
 		g.fillRect((Game.WIDTH / 2) - 499, (Game.HEIGHT / 2) - 149, 199, 63);
 		g.setColor(Color.black);
-		g.drawString(answers.get(answer[0]), (Game.WIDTH / 2) - 470, (Game.HEIGHT / 2) - 110);
+		g.drawString(answers[index][ansLocation[0]], (Game.WIDTH / 2) - 470, (Game.HEIGHT / 2) - 110);
 
 		g.setColor(Color.lightGray);
 		g.drawRect((Game.WIDTH / 2) - 500, (Game.HEIGHT / 2) - 75, 200, 64);
 		g.setColor(Color.gray);
 		g.fillRect((Game.WIDTH / 2) - 499, (Game.HEIGHT / 2) - 74, 199, 63);
 		g.setColor(Color.black);
-		g.drawString(answers.get(answer[1]), (Game.WIDTH / 2) - 470, (Game.HEIGHT / 2) - 30);
+		g.drawString(answers[index][ansLocation[1]], (Game.WIDTH / 2) - 470, (Game.HEIGHT / 2) - 30);
 
 		g.setColor(Color.lightGray);
 		g.drawRect((Game.WIDTH / 2) - 500, (Game.HEIGHT / 2), 200, 64);
 		g.setColor(Color.gray);
 		g.fillRect((Game.WIDTH / 2) - 499, (Game.HEIGHT / 2) + 1, 199, 63);
 		g.setColor(Color.black);
-		g.drawString(answers.get(answer[2]), (Game.WIDTH / 2) - 470, (Game.HEIGHT / 2) + 45);		
+		g.drawString(answers[index][ansLocation[2]], (Game.WIDTH / 2) - 470, (Game.HEIGHT / 2) + 45);
 
 		// =====================================================================
 		// Back button

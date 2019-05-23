@@ -127,7 +127,7 @@ public class Game extends Canvas implements Runnable {
 				HUD.HEALTH = 100;
 				gameState = STATE.End;
 				handler.object.clear();
-			} else if (HUD.level == 2) {
+			} else if (HUD.level == 12) {
 				HUD.HEALTH = 100;
 				gameState = STATE.Win;				
 				handler.object.clear();
