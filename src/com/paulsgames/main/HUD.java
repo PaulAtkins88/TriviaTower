@@ -5,12 +5,10 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
-import java.util.HashMap;
 import java.util.Random;
 
-import com.paulsgames.gfx.SpriteSheet;
 import com.paulsgames.main.Game.STATE;
+import com.paulsgames.utils.AudioPlayer;
 import com.paulsgames.utils.GameObject;
 import com.paulsgames.utils.Handler;
 import com.paulsgames.utils.Questions;
@@ -29,7 +27,7 @@ public class HUD extends MouseAdapter {
 	private int[] ansLocation;
 	private int index = 0;
 
-	private int[] test = {0,1,2};
+	private int[] test = { 0, 1, 2 };
 
 	// timer variables
 	public static long startTime;
@@ -48,14 +46,16 @@ public class HUD extends MouseAdapter {
 	}
 
 	public int[] randomAnswerLocation(int[] array) {
-
-		for (int i = 0; i < array.length; i++) {
-			int randomPosition = r.nextInt(array.length);
-			int temp = array[i];
-			array[i] = array[randomPosition];
-			array[randomPosition] = temp;
+		/* thanks burito for finding this loop.
+		*  https://stackoverflow.com/a/1520212
+		*  was driving me crazy trying to work out a simple way to randomise the locations of the answers
+		*/ 
+		for (int i = array.length - 1; i > 0; i--) {
+			int index = r.nextInt(i + 1);
+			int tmp = array[index];
+			array[index] = array[i];
+			array[i] = tmp;
 		}
-
 		return array;
 	}
 
@@ -134,6 +134,7 @@ public class HUD extends MouseAdapter {
 				object.setY((int) (object.getY() - 32));
 			}
 		}
+		AudioPlayer.getSound("correct").play();
 		index = getQuestionNumber();
 		ansLocation = randomAnswerLocation(test);
 		score += 100;
@@ -146,6 +147,7 @@ public class HUD extends MouseAdapter {
 				object.setY((int) (object.getY() + 32));
 			}
 		}
+		AudioPlayer.getSound("wrong").play();
 		HEALTH -= 10;
 		score -= 100;
 		level--;

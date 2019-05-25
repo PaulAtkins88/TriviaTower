@@ -20,7 +20,7 @@ public class Questions {
 		questions = new String[size];
 		answers = new String[size][3];
 		try {
-			this.input = new BufferedReader(new FileReader("data.csv"));
+			this.input = new BufferedReader(new FileReader("res/data.csv"));
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		}
@@ -51,7 +51,7 @@ public class Questions {
 	private int getArraySize() {
 		int count = 0;
 		try {
-			this.input = new BufferedReader(new FileReader("data.csv"));
+			this.input = new BufferedReader(new FileReader("res/data.csv"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

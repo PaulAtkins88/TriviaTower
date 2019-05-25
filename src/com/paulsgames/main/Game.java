@@ -10,6 +10,7 @@ import java.io.File;
 import com.paulsgames.gfx.BufferedImageLoader;
 import com.paulsgames.gfx.Tower;
 import com.paulsgames.gfx.Window;
+import com.paulsgames.utils.AudioPlayer;
 import com.paulsgames.utils.Handler;
 import com.paulsgames.utils.Menu;
 
@@ -36,17 +37,21 @@ public class Game extends Canvas implements Runnable {
 	public static STATE gameState = STATE.Menu; // start the game in the menu
 
 	public Game() {
-		File myFile = new File("spriteSheet.png");
+		File myFile = new File("res/spriteSheet.png");
 		BufferedImageLoader imageLoader = new BufferedImageLoader();
 		sprite_sheet = imageLoader.loadImage(myFile);
-		this.tower = new Tower(this);
+		this.tower = new Tower(this); // create the tower
+		this.handler = new Handler(); // create the handler which turns on all the render/tick methods for objects
+		this.hud = new HUD(this, handler); // create the HUD (main game)
+		this.menu = new Menu(this, handler); // create the Menu
+		this.addMouseListener(menu); // listen for the mouse in menu
+		this.addMouseListener(hud); // listen for the mouse in HUD
+		AudioPlayer.load(); // load the sound files
+		AudioPlayer.getMusic("music").loop(); // loop the background music
 
-		this.handler = new Handler();
-		this.hud = new HUD(this, handler);
-		this.menu = new Menu(this, handler);
-		this.addMouseListener(menu);
-		this.addMouseListener(hud);
-		new Window(WIDTH, HEIGHT, "Trivia Towers", this);
+		// TODO: Make this a slider in options or something to that effect
+		AudioPlayer.getMusic("music").setVolume(0.1f);
+		new Window(WIDTH, HEIGHT, "Trivia Towers", this); // create the window.
 	}
 
 	public void run() {
@@ -109,7 +114,8 @@ public class Game extends Canvas implements Runnable {
 		if (gameState == STATE.Game) {
 			tower.render(g);
 			hud.render(g);
-		} else if (gameState == STATE.Menu || gameState == STATE.Help || gameState == STATE.End || gameState == STATE.Win) {
+		} else if (gameState == STATE.Menu || gameState == STATE.Help || gameState == STATE.End
+				|| gameState == STATE.Win) {
 			menu.render(g);
 			tower.render(g);
 		}
@@ -129,7 +135,7 @@ public class Game extends Canvas implements Runnable {
 				handler.object.clear();
 			} else if (HUD.level == 12) {
 				HUD.HEALTH = 100;
-				gameState = STATE.Win;				
+				gameState = STATE.Win;
 				handler.object.clear();
 			}
 		} else if (gameState == STATE.Menu) {
